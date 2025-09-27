@@ -4,3 +4,4 @@ export { Input } from './Input';
 export { LoadingSpinner, PageLoading } from './LoadingSpinner';
 export { Node, StackNode, QueueNode } from './Node';
 export { Modal, ConfirmModal } from './Modal';
+export { ArrayNode } from './ArrayNode';

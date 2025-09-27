@@ -9,7 +9,9 @@ import {
   DashboardPage,
   LinkedListPage,
   StackPage,
-  QueuePage
+  QueuePage,
+  SortingPage,
+  SearchingPage
 } from './pages';
 
 /**
@@ -105,6 +107,43 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <QueuePage />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Algorithm routes */}
+      <Route 
+        path="/sorting" 
+        element={
+          <ProtectedRoute>
+            <SortingPage />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/sorting/:sessionId" 
+        element={
+          <ProtectedRoute>
+            <SortingPage />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/searching" 
+        element={
+          <ProtectedRoute>
+            <SearchingPage />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/searching/:sessionId" 
+        element={
+          <ProtectedRoute>
+            <SearchingPage />
           </ProtectedRoute>
         } 
       />
