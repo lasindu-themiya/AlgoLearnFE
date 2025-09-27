@@ -206,10 +206,11 @@ export class StackService {
   /**
    * Create a new Stack session
    */
-  async createSession(type: 'static' | 'dynamic', maxSize?: number): Promise<ApiResponse<StackSession>> {
+  async createSession(type: 'static' | 'dynamic', maxSize?: number, sessionId?: string): Promise<ApiResponse<StackSession>> {
     try {
       const response = await apiClient.post<ApiResponse<StackSession>>(`/api/stack/${type}`, {
-        maxSize
+        maxSize,
+        sessionId
       });
       return response.data;
     } catch (error: any) {
@@ -310,10 +311,11 @@ export class QueueService {
   /**
    * Create a new Queue session
    */
-  async createSession(type: 'static' | 'dynamic', maxSize?: number): Promise<ApiResponse<QueueSession>> {
+  async createSession(type: 'static' | 'dynamic', maxSize?: number, sessionId?: string): Promise<ApiResponse<QueueSession>> {
     try {
       const response = await apiClient.post<ApiResponse<QueueSession>>(`/api/queue/${type}`, {
-        maxSize
+        maxSize,
+        sessionId
       });
       return response.data;
     } catch (error: any) {

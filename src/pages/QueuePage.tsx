@@ -118,12 +118,14 @@ export const QueuePage: React.FC = () => {
         return;
       }
 
-      const response = await queueService.createSession(sessionType, maxSizeNum);
+      const response = await queueService.createSession(sessionType, maxSizeNum, customSessionId.trim() || undefined);
       
       if (response.success && response.data) {
         setSession(response.data);
         setShowCreateModal(false);
-        setSuccess(`${sessionType} queue session created successfully!`);
+        const sessionIdInfo = customSessionId.trim() ? ` with ID: ${response.data.sessionId}` : '';
+        setSuccess(`${sessionType} queue session created successfully${sessionIdInfo}!`);
+        setCustomSessionId(''); // Clear for next use
         await refreshView();
       } else {
         setError(response.message || 'Failed to create session');
