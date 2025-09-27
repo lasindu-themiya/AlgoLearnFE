@@ -298,8 +298,8 @@ export const DashboardPage: React.FC = () => {
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-dark-900 to-dark-950 border-r border-gray-700 shadow-2xl transform ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } transition-transform lg:translate-x-0 lg:static lg:inset-0`}>
-        <div className="flex items-center justify-between h-20 px-6 border-b border-gray-700">
+      } transition-transform lg:translate-x-0 lg:static lg:inset-0 flex flex-col`}>
+        <div className="flex items-center justify-between h-20 px-6 border-b border-gray-700 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="h-12 w-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <Database className="h-7 w-7 text-white" />
@@ -314,66 +314,70 @@ export const DashboardPage: React.FC = () => {
           </button>
         </div>
 
-        <nav className="flex-1 px-6 py-8 space-y-4">
-          <div className="space-y-3">
-            <div className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">
-              Navigation
+        {/* Scrollable navigation area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll">
+          <nav className="px-6 py-8 space-y-4">
+            <div className="space-y-3">
+              <div className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">
+                Navigation
+              </div>
+              <button className="w-full flex items-center space-x-4 px-4 py-3 text-teal-400 bg-gradient-to-r from-teal-600/20 to-teal-500/10 rounded-xl border border-teal-500/20">
+                <LayoutDashboard className="h-6 w-6" />
+                <span className="font-medium">Dashboard</span>
+              </button>
             </div>
-            <button className="w-full flex items-center space-x-4 px-4 py-3 text-teal-400 bg-gradient-to-r from-teal-600/20 to-teal-500/10 rounded-xl border border-teal-500/20">
-              <LayoutDashboard className="h-6 w-6" />
-              <span className="font-medium">Dashboard</span>
-            </button>
-          </div>
 
-          <div className="space-y-3">
-            <div className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4 mt-8">
-              Data Structures
+            <div className="space-y-3">
+              <div className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4 mt-8">
+                Data Structures
+              </div>
+              <button
+                onClick={() => handleCreateSession('linkedlist')}
+                className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
+              >
+                <List className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
+                <span className="font-medium">Linked Lists</span>
+              </button>
+              <button
+                onClick={() => handleCreateSession('stack')}
+                className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
+              >
+                <Layers className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
+                <span className="font-medium">Stacks</span>
+              </button>
+              <button
+                onClick={() => handleCreateSession('queue')}
+                className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
+              >
+                <CircleDot className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
+                <span className="font-medium">Queues</span>
+              </button>
             </div>
-            <button
-              onClick={() => handleCreateSession('linkedlist')}
-              className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
-            >
-              <List className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
-              <span className="font-medium">Linked Lists</span>
-            </button>
-            <button
-              onClick={() => handleCreateSession('stack')}
-              className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
-            >
-              <Layers className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
-              <span className="font-medium">Stacks</span>
-            </button>
-            <button
-              onClick={() => handleCreateSession('queue')}
-              className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
-            >
-              <CircleDot className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
-              <span className="font-medium">Queues</span>
-            </button>
-          </div>
 
-          <div className="space-y-3">
-            <div className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4 mt-8">
-              Algorithms
+            <div className="space-y-3">
+              <div className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4 mt-8">
+                Algorithms
+              </div>
+              <button
+                onClick={() => handleCreateAlgorithmSession('sorting')}
+                className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
+              >
+                <TrendingUp className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
+                <span className="font-medium">Sorting</span>
+              </button>
+              <button
+                onClick={() => handleCreateAlgorithmSession('searching')}
+                className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
+              >
+                <Search className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
+                <span className="font-medium">Searching</span>
+              </button>
             </div>
-            <button
-              onClick={() => handleCreateAlgorithmSession('sorting')}
-              className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
-            >
-              <TrendingUp className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
-              <span className="font-medium">Sorting</span>
-            </button>
-            <button
-              onClick={() => handleCreateAlgorithmSession('searching')}
-              className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
-            >
-              <Search className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
-              <span className="font-medium">Searching</span>
-            </button>
-          </div>
-        </nav>
+          </nav>
+        </div>
 
-        <div className="p-6 border-t border-gray-700">
+        {/* Fixed bottom section with user info and logout */}
+        <div className="p-6 border-t border-gray-700 flex-shrink-0">
           <div className="flex items-center space-x-4 mb-6">
             <div className="h-12 w-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <User className="h-6 w-6 text-white" />
