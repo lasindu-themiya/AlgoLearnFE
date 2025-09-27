@@ -4,13 +4,9 @@ import { UserPlus, User, Lock, Mail } from 'lucide-react';
 import { Button, Input } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 
-/**
- * SignUp Page Component
- * User registration page with form validation
- */
 export const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signup, isLoading } = useAuth();
+  const { signup } = useAuth();
   
   const [formData, setFormData] = useState({
     username: '',
@@ -29,11 +25,13 @@ export const SignUpPage: React.FC = () => {
     }));
     
     // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+    if (errors[name] || errors.submit) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        delete newErrors.submit;
+        return newErrors;
+      });
     }
   };
 
@@ -64,7 +62,7 @@ export const SignUpPage: React.FC = () => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
     
-    setErrors(newErrors);
+   setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -74,6 +72,7 @@ export const SignUpPage: React.FC = () => {
     if (!validateForm()) return;
     
     setIsSubmitting(true);
+    setErrors({});
     
     try {
       const result = await signup({
@@ -83,19 +82,23 @@ export const SignUpPage: React.FC = () => {
       });
       
       if (result.success) {
-        console.log('✅ Signup successful, redirecting to login');
+        console.log('✅ Signup successful, navigating to signin.');
+        // Navigate immediately on success. The component will unmount, so no further state updates are needed.
         navigate('/signin', { 
           replace: true, 
-          state: { successMessage: 'Account created successfully! Please sign in to continue.' }
+          state: { successMessage: 'Account created successfully! Please sign in.' }
         });
       } else {
-        setErrors({ submit: result.message });
+        // If the API returns a failure message without throwing an error
+        setErrors({ submit: result.message || 'An unknown error occurred.' });
+        setIsSubmitting(false); // Stop loading on failure
       }
     } catch (error: any) {
       console.error('❌ Signup error:', error);
-      setErrors({ submit: 'An unexpected error occurred. Please try again.' });
-    } finally {
-      setIsSubmitting(false);
+      // Handle errors thrown by the API call (e.g., network error, 409 Conflict)
+      const message = error?.response?.data?.message || 'Could not connect to the server. Please try again.';
+      setErrors({ submit: message });
+      setIsSubmitting(false); // Stop loading on exception
     }
   };
 
@@ -178,8 +181,8 @@ export const SignUpPage: React.FC = () => {
           <Button
             type="submit"
             size="lg"
-            loading={isSubmitting || isLoading}
-            disabled={isSubmitting || isLoading}
+            loading={isSubmitting}
+            disabled={isSubmitting}
             className="w-full"
           >
             {isSubmitting ? 'Creating account...' : 'Create account'}

@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize authentication on app load
   useEffect(() => {
-    const initializeAuth = () => {
+    const initAuth = () => {
       console.log('🔐 Initializing authentication...');
       
       const token = authService.getToken();
@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
-    initializeAuth();
+    initAuth();
   }, []);
 
   /**
@@ -140,35 +140,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('🔐 Attempting login for user:', credentials.username);
       
-      const response = await authService.signin(credentials);
-      
-      if (response.success) {
-        if (response.token && response.user) {
-          console.log('✅ Login successful for user:', response.user);
-          dispatch({
-            type: 'LOGIN_SUCCESS',
-            payload: {
-              user: response.user,
-              token: response.token
-            }
-          });
-          return { success: true, message: response.message || 'Login successful' };
-        } else {
-          // Success but missing token/user data
-          console.log('❌ Login response missing data:', response);
-          dispatch({ type: 'LOGIN_FAILURE', payload: 'Login failed - invalid response from server' });
-          return { success: false, message: 'Login failed - invalid response from server' };
-        }
-      } else {
-        console.log('❌ Login failed:', response.message);
-        dispatch({ type: 'LOGIN_FAILURE', payload: response.message || 'Login failed' });
-        return { success: false, message: response.message || 'Login failed' };
-      }
+      const data = await authService.signin(credentials);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      dispatch({ type: 'LOGIN_SUCCESS', payload: data });
+      return { success: true, message: 'Login successful' };
     } catch (error: any) {
-      console.error('❌ Login error:', error);
-      const message = error.message || 'Login failed. Please try again.';
+      const message = error.response?.data?.message || 'Login failed';
       dispatch({ type: 'LOGIN_FAILURE', payload: message });
-      return { success: false, message };
+      throw error; // Re-throw the error so the component can catch it
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -180,27 +160,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @returns Promise with success status and message
    */
   const signup = async (userData: SignupRequest): Promise<{ success: boolean; message: string }> => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    
+    // No dispatch here, signup does not log the user in.
     try {
       console.log('📝 Attempting signup for user:', userData.username);
       
-      const response = await authService.signup(userData);
-      
-      if (response.success) {
-        console.log('✅ Signup successful:', response.message);
-        // Note: No auto-login after registration - user must sign in separately
-        return { success: true, message: response.message };
-      } else {
-        console.log('❌ Signup failed:', response.message);
-        dispatch({ type: 'SIGNUP_FAILURE', payload: response.message });
-        return { success: false, message: response.message };
-      }
+      const data = await authService.signup(userData);
+      // On success, just return the success status and message.
+      // Do not dispatch any state changes.
+      return { success: true, message: data.message };
     } catch (error: any) {
-      console.error('❌ Signup error:', error);
-      const message = error.message || 'Signup failed. Please try again.';
-      dispatch({ type: 'SIGNUP_FAILURE', payload: message });
-      return { success: false, message };
+      // On failure, just return the failure status and message.
+      throw error; // Re-throw for the component to handle.
     }
   };
 
