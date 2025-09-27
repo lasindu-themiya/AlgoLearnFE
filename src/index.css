@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom dark theme styles */
+body {
+  @apply bg-dark-950 text-gray-100 min-h-screen;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Node visualization styles */
+.node {
+  @apply bg-teal-600 text-white rounded-lg p-3 border-2 border-teal-400 transition-all duration-300;
+}
+
+.node:hover {
+  @apply bg-teal-500 border-teal-300 transform scale-105;
+}
+
+.node.highlighted {
+  @apply bg-amber-600 border-amber-400 shadow-lg shadow-amber-500/50;
+}
+
+.node.searching {
+  @apply bg-red-600 border-red-400 animate-pulse;
+}
+
+/* Stack visualization */
+.stack-container {
+  @apply flex flex-col-reverse items-center space-y-reverse space-y-2;
+}
+
+/* Queue visualization */
+.queue-container {
+  @apply flex items-center space-x-2;
+}
+
+/* LinkedList visualization */
+.linked-list-container {
+  @apply flex items-center space-x-4;
+}
+
+.arrow {
+  @apply text-teal-400 text-2xl;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}

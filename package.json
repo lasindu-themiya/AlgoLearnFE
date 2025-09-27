@@ -1,0 +1,40 @@
+{
+  "name": "algopulse-frontend",
+  "version": "1.0.0",
+  "description": "Data Structure Visualizer Frontend",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "data-structures",
+    "visualization"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@react-spring/web": "^10.0.3",
+    "@types/node": "^24.5.2",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^5.0.3",
+    "autoprefixer": "^10.4.21",
+    "axios": "^1.12.2",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0",
+    "postcss": "^8.5.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.9.2",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "tailwindcss": "^3.4.17"
+  }
+}
