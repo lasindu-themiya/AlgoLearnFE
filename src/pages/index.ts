@@ -5,3 +5,5 @@ export { DashboardPage } from './DashboardPage';
 export { LinkedListPage } from './LinkedListPage';
 export { StackPage } from './StackPage';
 export { QueuePage } from './QueuePage';
+export { SortingPage } from './SortingPage';
+export { SearchingPage } from './SearchingPage';

@@ -84,3 +84,84 @@ export interface AnimationState {
   searchingNodes: number[];
   operation: string | null;
 }
+
+// Sorting types
+export interface SortingStep {
+  array: number[];
+  compareIndex1: number;
+  compareIndex2: number;
+  swapped: boolean;
+  description: string;
+  timestamp: number;
+}
+
+export interface SortingSession {
+  id: string;
+  sessionId: string;
+  userId: string;
+  algorithm: 'bubble' | 'insertion' | 'selection' | 'min' | 'optimized-bubble';
+  originalArray: number[];
+  currentArray: number[];
+  completed: boolean;
+  comparisons: number;
+  swaps: number;
+  steps: SortingStep[];
+  operationHistory: any[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface SortingRequest {
+  sessionId?: string;
+  array: number[];
+}
+
+export interface SortingResponse extends ApiResponse {
+  session?: SortingSession;
+  sortedArray?: number[];
+  comparisons?: number;
+  swaps?: number;
+  steps?: SortingStep[];
+}
+
+// Searching types
+export interface SearchStep {
+  currentIndex: number;
+  value: number;
+  match: boolean;
+  left: number;
+  right: number;
+  mid: number;
+  description: string;
+  timestamp: number;
+}
+
+export interface SearchSession {
+  id: string;
+  sessionId: string;
+  userId: string;
+  algorithm: 'linear' | 'binary';
+  array: number[];
+  target: number;
+  found: boolean;
+  foundIndex: number;
+  comparisons: number;
+  steps: SearchStep[];
+  operationHistory: any[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface SearchRequest {
+  sessionId?: string;
+  array: number[];
+  target: number;
+}
+
+export interface SearchResponse extends ApiResponse {
+  session?: SearchSession;
+  found?: boolean;
+  foundIndex?: number;
+  comparisons?: number;
+  steps?: SearchStep[];
+}

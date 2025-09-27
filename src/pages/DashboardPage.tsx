@@ -11,18 +11,23 @@ import {
   Settings,
   Menu,
   X,
-  Database
+  Database,
+  TrendingUp,
+  Search
 } from 'lucide-react';
 import { Button } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { LinkedListService, StackService, QueueService } from '../services/dataStructureService';
+import { sortingService } from '../services/sortingService';
+import { searchingService } from '../services/searchingService';
 
 interface Session {
   id: string;
   sessionId: string;
   userId: string;
   name: string;
-  type: 'linkedlist' | 'stack' | 'queue';
+  type: 'linkedlist' | 'stack' | 'queue' | 'sorting' | 'searching';
+  algorithm?: string; // For sorting and searching sessions
   createdAt: string;
   updatedAt: string;
   size: number;
@@ -64,18 +69,22 @@ export const DashboardPage: React.FC = () => {
         const stackService = new StackService();
         const queueService = new QueueService();
 
-        // Fetch sessions from all data structure services
+        // Fetch sessions from all services (data structures + algorithms)
         console.log('📡 Calling API endpoints...');
-        const [linkedListResponse, stackResponse, queueResponse] = await Promise.allSettled([
+        const [linkedListResponse, stackResponse, queueResponse, sortingResponse, searchingResponse] = await Promise.allSettled([
           linkedListService.getSessions(),
           stackService.getSessions(),
-          queueService.getSessions()
+          queueService.getSessions(),
+          sortingService.getSessions(),
+          searchingService.getSessions()
         ]);
 
         console.log('📊 API Responses:', {
           linkedList: linkedListResponse,
           stack: stackResponse,
-          queue: queueResponse
+          queue: queueResponse,
+          sorting: sortingResponse,
+          searching: searchingResponse
         });
 
         // Extract data from API responses and combine sessions
@@ -144,6 +153,50 @@ export const DashboardPage: React.FC = () => {
           console.error('❌ Queue API failed:', queueResponse.reason);
         }
 
+        // Handle Sorting sessions
+        if (sortingResponse.status === 'fulfilled' && sortingResponse.value.success && sortingResponse.value.sessions) {
+          const sortingSessions = sortingResponse.value.sessions.map((s: any) => ({ 
+            id: s.sessionId, // Use sessionId as id
+            sessionId: s.sessionId,
+            userId: 'current-user', // Default user
+            type: 'sorting' as const,
+            algorithm: s.algorithm,
+            name: `${s.algorithm.charAt(0).toUpperCase() + s.algorithm.slice(1)} Sort`,
+            createdAt: s.createdAt || new Date().toISOString(),
+            updatedAt: s.createdAt || new Date().toISOString(),
+            size: 0, // We'll get this from individual session details
+            elements: []
+          }));
+          allSessions.push(...sortingSessions);
+          console.log('✅ Sorting sessions loaded:', sortingSessions.length);
+        } else if (sortingResponse.status === 'fulfilled') {
+          console.log('⚠️ Sorting API response:', sortingResponse.value);
+        } else {
+          console.error('❌ Sorting API failed:', sortingResponse.reason);
+        }
+
+        // Handle Searching sessions
+        if (searchingResponse.status === 'fulfilled' && searchingResponse.value.success && searchingResponse.value.sessions) {
+          const searchingSessions = searchingResponse.value.sessions.map((s: any) => ({ 
+            id: s.sessionId, // Use sessionId as id
+            sessionId: s.sessionId,
+            userId: 'current-user', // Default user
+            type: 'searching' as const,
+            algorithm: s.algorithm,
+            name: `${s.algorithm.charAt(0).toUpperCase() + s.algorithm.slice(1)} Search`,
+            createdAt: s.createdAt || new Date().toISOString(),
+            updatedAt: s.createdAt || new Date().toISOString(),
+            size: 0, // We'll get this from individual session details
+            elements: []
+          }));
+          allSessions.push(...searchingSessions);
+          console.log('✅ Searching sessions loaded:', searchingSessions.length);
+        } else if (searchingResponse.status === 'fulfilled') {
+          console.log('⚠️ Searching API response:', searchingResponse.value);
+        } else {
+          console.error('❌ Searching API failed:', searchingResponse.reason);
+        }
+
         // Sort by updated date (newest first)
         allSessions.sort((a, b) => {
           const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
@@ -155,7 +208,7 @@ export const DashboardPage: React.FC = () => {
         setSessions(allSessions);
         
         // Set specific error message if all APIs failed
-        const allFailed = [linkedListResponse, stackResponse, queueResponse].every(r => 
+        const allFailed = [linkedListResponse, stackResponse, queueResponse, sortingResponse, searchingResponse].every(r => 
           r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success)
         );
         
@@ -187,6 +240,10 @@ export const DashboardPage: React.FC = () => {
     navigate(`/${type}`);
   };
 
+  const handleCreateAlgorithmSession = (type: 'sorting' | 'searching') => {
+    navigate(`/${type}`);
+  };
+
   const handleOpenSession = (session: Session) => {
     // Navigate to the specific data structure page with the sessionId
     navigate(`/${session.type}?sessionId=${session.sessionId}`);
@@ -210,6 +267,10 @@ export const DashboardPage: React.FC = () => {
         return <Layers className="h-5 w-5" />;
       case 'queue':
         return <CircleDot className="h-5 w-5" />;
+      case 'sorting':
+        return <TrendingUp className="h-5 w-5" />;
+      case 'searching':
+        return <Search className="h-5 w-5" />;
       default:
         return <Database className="h-5 w-5" />;
     }
@@ -223,6 +284,10 @@ export const DashboardPage: React.FC = () => {
         return 'Stack';
       case 'queue':
         return 'Queue';
+      case 'sorting':
+        return 'Sorting';
+      case 'searching':
+        return 'Searching';
       default:
         return 'Unknown';
     }
@@ -284,6 +349,26 @@ export const DashboardPage: React.FC = () => {
             >
               <CircleDot className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
               <span className="font-medium">Queues</span>
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            <div className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4 mt-8">
+              Algorithms
+            </div>
+            <button
+              onClick={() => handleCreateAlgorithmSession('sorting')}
+              className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
+            >
+              <TrendingUp className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
+              <span className="font-medium">Sorting</span>
+            </button>
+            <button
+              onClick={() => handleCreateAlgorithmSession('searching')}
+              className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/50 hover:to-gray-700/30 rounded-xl transition-all duration-200 hover:border hover:border-gray-600/30 group"
+            >
+              <Search className="h-6 w-6 group-hover:text-teal-400 transition-colors" />
+              <span className="font-medium">Searching</span>
             </button>
           </div>
         </nav>
@@ -399,6 +484,55 @@ export const DashboardPage: React.FC = () => {
                   <div className="flex items-center text-teal-400 text-base font-medium group-hover:text-teal-300 transition-colors">
                     <Plus className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
                     Start new session
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Algorithms section */}
+          <div className="mb-12">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-100 mb-3">Algorithm Visualization</h2>
+              <p className="text-lg text-gray-400">Explore sorting and searching algorithms with step-by-step visualization</p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <button
+                onClick={() => handleCreateAlgorithmSession('sorting')}
+                className="relative group bg-gradient-to-br from-dark-900/80 to-dark-900/40 border border-gray-700 rounded-2xl p-8 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 text-left transform hover:-translate-y-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-pink-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="p-3 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl group-hover:from-purple-500/30 group-hover:to-purple-600/30 transition-all duration-300">
+                      <TrendingUp className="h-8 w-8 text-purple-400 group-hover:text-purple-300 group-hover:scale-110 transition-all duration-300" />
+                    </div>
+                    <span className="text-2xl font-bold text-gray-100 group-hover:text-white transition-colors">Sorting Algorithms</span>
+                  </div>
+                  <p className="text-base text-gray-400 mb-6 leading-relaxed group-hover:text-gray-300 transition-colors">Visualize bubble sort, insertion sort, selection sort, and more with interactive step-by-step animations</p>
+                  <div className="flex items-center text-purple-400 text-base font-medium group-hover:text-purple-300 transition-colors">
+                    <Plus className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
+                    Start sorting visualization
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleCreateAlgorithmSession('searching')}
+                className="relative group bg-gradient-to-br from-dark-900/80 to-dark-900/40 border border-gray-700 rounded-2xl p-8 hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 text-left transform hover:-translate-y-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl group-hover:from-blue-500/30 group-hover:to-blue-600/30 transition-all duration-300">
+                      <Search className="h-8 w-8 text-blue-400 group-hover:text-blue-300 group-hover:scale-110 transition-all duration-300" />
+                    </div>
+                    <span className="text-2xl font-bold text-gray-100 group-hover:text-white transition-colors">Searching Algorithms</span>
+                  </div>
+                  <p className="text-base text-gray-400 mb-6 leading-relaxed group-hover:text-gray-300 transition-colors">Explore linear search and binary search algorithms with visual feedback and performance comparisons</p>
+                  <div className="flex items-center text-blue-400 text-base font-medium group-hover:text-blue-300 transition-colors">
+                    <Plus className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
+                    Start search visualization
                   </div>
                 </div>
               </button>
