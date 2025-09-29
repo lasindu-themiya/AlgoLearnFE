@@ -183,7 +183,7 @@ export const LandingPage: React.FC = () => {
               </div>
               <div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-teal-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                  AlgoLearn
+                  AlgoPulse
                 </span>
                 <div className="text-xs text-gray-400 -mt-1">Interactive Learning Platform</div>
               </div>
@@ -259,7 +259,7 @@ export const LandingPage: React.FC = () => {
                   <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
                   <div className="h-3 w-3 bg-green-500 rounded-full"></div>
                 </div>
-                <div className="text-sm text-gray-400">AlgoLearn Dashboard Preview</div>
+                <div className="text-sm text-gray-400">AlgoPulse Dashboard Preview</div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -717,7 +717,7 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-2xl font-bold bg-gradient-to-r from-teal-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                    AlgoLearn
+                    AlgoPulse
                   </span>
                   <div className="text-sm text-gray-400 -mt-1">Interactive Learning Platform</div>
                 </div>
@@ -764,7 +764,7 @@ export const LandingPage: React.FC = () => {
           <div className="border-t border-gray-800/50 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="text-base text-gray-400 mb-4 md:mb-0">
-                © 2025 AlgoLearn. Built for interactive learning and algorithmic mastery.
+                © 2025 AlgoPulse. Built for interactive learning and algorithmic mastery.
               </div>
               
               <div className="flex items-center space-x-6 text-sm text-gray-400">
