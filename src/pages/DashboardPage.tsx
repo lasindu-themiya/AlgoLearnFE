@@ -15,7 +15,6 @@ import {
   TrendingUp,
   Search
 } from 'lucide-react';
-import { Button } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { LinkedListService, StackService, QueueService } from '../services/dataStructureService';
 import { sortingService } from '../services/sortingService';
@@ -45,6 +44,8 @@ export const DashboardPage: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filterType, setFilterType] = useState('all');
+  const [filterDate, setFilterDate] = useState('');
 
   // Debug authentication state
   useEffect(() => {
@@ -226,6 +227,31 @@ export const DashboardPage: React.FC = () => {
 
     fetchSessions();
   }, []);
+
+  const filteredSessions = React.useMemo(() => {
+    return sessions.filter(session => {
+      const typeMatch = filterType === 'all' || session.type === filterType;
+      
+      let dateMatch = true;
+      if (filterDate) {
+        // Create a Date object from the session's UTC createdAt string
+        const sessionDate = new Date(session.createdAt);
+        
+        // Get the year, month, and day from the session's date *in UTC*
+        const year = sessionDate.getUTCFullYear();
+        const month = (sessionDate.getUTCMonth() + 1).toString().padStart(2, '0'); // months are 0-indexed
+        const day = sessionDate.getUTCDate().toString().padStart(2, '0');
+        
+        // Form a YYYY-MM-DD string from the UTC date parts
+        const sessionDateString = `${year}-${month}-${day}`;
+        
+        // Compare this string with the filterDate from the input
+        dateMatch = sessionDateString === filterDate;
+      }
+
+      return typeMatch && dateMatch;
+    });
+  }, [sessions, filterType, filterDate]);
 
   const handleLogout = async () => {
     try {
@@ -543,73 +569,97 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Recent sessions */}
+          {/* Recent Sessions */}
           <div>
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-100 mb-3">Recent Sessions</h2>
-              <p className="text-lg text-gray-400">Continue where you left off or explore your learning history</p>
+            <div className="mb-8 flex justify-between items-center">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-100 mb-3">Recent Sessions</h2>
+                <p className="text-lg text-gray-400">Continue your learning where you left off</p>
+              </div>
+              {/* Filter controls */}
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <select
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    className="bg-dark-800 border border-gray-700 text-gray-300 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 appearance-none"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="linkedlist">Linked List</option>
+                    <option value="stack">Stack</option>
+                    <option value="queue">Queue</option>
+                    <option value="sorting">Sorting</option>
+                    <option value="searching">Searching</option>
+                  </select>
+                </div>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    className="bg-dark-800 border border-gray-700 text-gray-300 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5"
+                  />
+                </div>
+              </div>
             </div>
-            
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-gray-400">Loading sessions...</div>
+
+            {isLoading && (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-400 mx-auto"></div>
+                <p className="mt-4 text-gray-400">Loading sessions...</p>
               </div>
-            ) : error ? (
-              <div className="bg-red-900/20 border border-red-500 rounded-lg p-4">
-                <p className="text-red-400">{error}</p>
+            )}
+
+            {error && (
+              <div className="bg-red-900/20 border border-red-500/30 text-red-400 p-6 rounded-xl text-center">
+                <h3 className="font-bold text-lg mb-2">Error</h3>
+                <p>{error}</p>
               </div>
-            ) : sessions.length === 0 ? (
-              <div className="text-center py-12 bg-dark-900/50 rounded-lg border border-gray-800">
-                <Database className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-300 mb-2">No sessions yet</h3>
-                <p className="text-gray-400 mb-4">Create your first data structure session to get started</p>
-                <Button
-                  onClick={() => handleCreateSession('linkedlist')}
-                  className="bg-teal-600 hover:bg-teal-700"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Session
-                </Button>
+            )}
+
+            {!isLoading && !error && filteredSessions.length === 0 && (
+              <div className="text-center py-12 bg-dark-900/50 rounded-2xl border border-gray-800">
+                <Database className="h-16 w-16 text-gray-600 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold text-gray-300 mb-3">No Sessions Found</h3>
+                <p className="text-gray-400 max-w-md mx-auto">
+                  {sessions.length > 0 ? "No sessions match your current filters. Try adjusting your filter settings." : "You haven't started any sessions yet. Create one above to begin!"}
+                </p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sessions.map((session) => (
-                  <button
+            )}
+
+            {!isLoading && !error && filteredSessions.length > 0 && (
+              <div className="space-y-4">
+                {filteredSessions.map((session) => (
+                  <div
                     key={session.id}
                     onClick={() => handleOpenSession(session)}
-                    className="p-4 bg-dark-900 border border-gray-800 rounded-lg hover:border-teal-600/50 transition-colors text-left group"
+                    className="bg-gradient-to-r from-dark-900/70 to-dark-800/60 border border-gray-700 rounded-2xl p-6 flex items-center justify-between hover:bg-dark-800/80 hover:border-teal-500/40 transition-all duration-200 cursor-pointer group transform hover:scale-[1.02]"
                   >
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="text-teal-400 group-hover:text-teal-300">
+                    <div className="flex items-center space-x-6">
+                      <div className="p-4 bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-xl group-hover:from-teal-600/20 group-hover:to-teal-500/10 transition-all duration-300">
                         {getSessionIcon(session.type)}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-100 truncate">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-100 group-hover:text-teal-400 transition-colors">
                           {session.name}
-                        </div>
-                        <div className="text-xs text-gray-400">
+                        </h3>
+                        <p className="text-sm text-gray-400">
                           {getSessionTypeName(session.type)}
-                        </div>
+                          {session.algorithm && ` - ${session.algorithm}`}
+                        </p>
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      Updated {formatDate(session.updatedAt)}
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-300">{formatDate(session.updatedAt)}</p>
+                      <p className="text-xs text-gray-500">Last updated</p>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             )}
           </div>
         </main>
       </div>
-
-      {/* Sidebar overlay for mobile */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 };

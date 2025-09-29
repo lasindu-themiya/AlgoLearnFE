@@ -165,8 +165,8 @@ export const LandingPage: React.FC = () => {
   ];
 
   const stats = [
-    { icon: <Database className="h-8 w-8" />, label: 'Data Structures', value: '5+', color: 'text-blue-400' },
-    { icon: <BarChart3 className="h-8 w-8" />, label: 'Algorithms', value: '10+', color: 'text-green-400' },
+    { icon: <Database className="h-8 w-8" />, label: 'Data Structures', value: '2+', color: 'text-blue-400' },
+    { icon: <BarChart3 className="h-8 w-8" />, label: 'Algorithms', value: '7+', color: 'text-green-400' },
     { icon: <Activity className="h-8 w-8" />, label: 'Animations', value: '100%', color: 'text-purple-400' },
     { icon: <Trophy className="h-8 w-8" />, label: 'Success Rate', value: '95%', color: 'text-amber-400' }
   ];
