@@ -330,7 +330,7 @@ export const DashboardPage: React.FC = () => {
             <div className="h-12 w-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <Database className="h-7 w-7 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-teal-300 bg-clip-text text-transparent">AlgoPulse</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-teal-300 bg-clip-text text-transparent">AlgoLearn</span>
           </div>
           <button
             onClick={() => setIsSidebarOpen(false)}

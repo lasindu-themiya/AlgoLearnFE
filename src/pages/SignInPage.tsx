@@ -111,7 +111,7 @@ export const SignInPage: React.FC = () => {
             <LogIn className="h-6 w-6 text-white" />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-100">
-            Sign in to AlgoPulse
+            Sign in to AlgoLearn
           </h2>
           <p className="mt-2 text-sm text-gray-400">
             Welcome back! Please sign in to continue

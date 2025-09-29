@@ -111,7 +111,7 @@ export const SignUpPage: React.FC = () => {
             <UserPlus className="h-6 w-6 text-white" />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-100">
-            Join AlgoPulse
+            Join AlgoLearn
           </h2>
           <p className="mt-2 text-sm text-gray-400">
             Create your account to start visualizing data structures
